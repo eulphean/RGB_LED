@@ -55,10 +55,7 @@ void loop() {
         brightnessVal = constrain(brightnessVal, 0, 255);
         setLEDColor(brightnessVal);
      }
-  }
-
-  // FadeOut state.
-  if (currentFadeState == FadeOut) {
+  } else if (currentFadeState == FadeOut) { // FadeOut state.
     if (elapsedTime > fadeOutTime) {
        // Update state to FadeIn. 
        currentFadeState = FadeIn; 

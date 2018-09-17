@@ -2,8 +2,8 @@
 
   Author: Amay Kataria
   Date: 08/16/2018
-  Description: Use the RAMP library to create a double fade
-  sequence for an EXIT sign. 
+  Description: Simple fade for a single LED using Ramp
+  library. 
     
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

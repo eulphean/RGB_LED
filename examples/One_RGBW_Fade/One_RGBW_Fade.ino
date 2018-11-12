@@ -1,75 +1,77 @@
 /*  * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
   Author: Amay Kataria
-  Date: 05/06/2018
+  Date: 05/06/2018, Updated 11/11/2018
   Description: Cycle through R,G,B,W colors while fading them 
   in and out. 
     
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <RGB_LED.h>
+#include <Ramp.h>
 
+// LED colors
 enum LEDState {
   Red,
   Green,
   Blue, 
   White 
 }; 
+LEDState currentLedState = Red; 
 
+// LED fade state
 enum FadeState { 
   FadeIn, 
   FadeOut
 };
+FadeState fadeState = FadeIn;
 
-// Define LED driver pins.
+// LED driver pins
 RGB_LED led(3, 5, 6);
-LEDState currentLedState = Red; 
-FadeState currentFadeState = FadeIn;
 
-// Record the last time to track the time of the LED. 
-unsigned long lastTime; 
-
-// Current LED state. 
-bool ledOn = true; 
+// Fade variables
+ramp fade; 
 int fadeInTime = 1000;
 int fadeOutTime = 2000;
+int maxBrightness = 255; 
 
 void setup() {
-  // Record starting time. 
-  lastTime = millis(); 
+  // Initialize ramp.
+  setRamp();
 }
 
 void loop() {
-  // Calculate the elapsed time. 
-  unsigned long int elapsedTime = millis() - lastTime; 
-
-  // FadeIn state. 
-  if (currentFadeState == FadeIn) {
-     if (elapsedTime > fadeInTime) {
-        // Update state to FadeOut.
-        currentFadeState = FadeOut;
-        lastTime = millis(); // Reset time. 
-     } else {
-        // Map the brightness value based on elapsed time. 
-        int brightnessVal = map (elapsedTime, 0, fadeInTime, 0, 255); 
-        brightnessVal = constrain(brightnessVal, 0, 255);
-        setLEDColor(brightnessVal);
-     }
-  } else if (currentFadeState == FadeOut) { // FadeOut state.
-    if (elapsedTime > fadeOutTime) {
-       // Update state to FadeIn. 
-       currentFadeState = FadeIn; 
-       lastTime = millis(); // Reset time
-       updateLEDState();
-    } else {
-        int brightnessVal = map (elapsedTime, 0, fadeOutTime, 255, 0); 
-        brightnessVal = constrain(brightnessVal, 0, 255);
-        setLEDColor(brightnessVal);
-    }
+  /* Have reached maximum brightness and current state is FadeIn? */
+  if (fade.value() == maxBrightness && fadeState == FadeIn) {
+    fadeState = FadeOut; 
+    setRamp();
   }
+
+  /* Have reached minimum brightness and current state is FadeOut? 
+     Update LED state. */
+  if (fade.value() == 0 && fadeState == FadeOut) {
+    updateLEDState();
+    fadeState = FadeIn; 
+    setRamp();
+  }
+
+  setLEDColor(fade.update());
 }
 
-// Set the LED color based on the current LED state.
+
+void setRamp() {
+  if (fadeState == FadeIn) {
+    fade.go(/*Digital value to interpolate between (0-255)*/ maxBrightness, /*Fade duration*/ fadeInTime, 
+    /*Interpolation mode*/QUADRATIC_IN, /*Loop mode*/ ONCEFORWARD);
+  }
+  
+  if (fadeState == FadeOut) {
+    fade.go(/*Digital value to interpolate between (0-255)*/ 0, /*Fade duration*/ fadeOutTime, 
+    /*Interpolation mode*/QUADRATIC_IN, /*Loop mode*/ ONCEFORWARD);
+  } 
+}
+
+// Set LED colors.
 void setLEDColor(int brightnessVal) {
   switch (currentLedState) {
     case Red: {
@@ -98,7 +100,7 @@ void setLEDColor(int brightnessVal) {
   }
 }
 
-// Cycle through different LEDs to turn on. 
+// Cycle LED state. 
 void updateLEDState() {
   if (currentLedState == Red) {
      currentLedState = Green; 

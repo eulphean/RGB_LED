@@ -2,9 +2,8 @@
 
   Author: Amay Kataria
   Date: 08/16/2018
-  Description: Use Ramp library to create a double fade
-  sequence for an EXIT sign. Create an array to interpolate
-  RGB values. 
+  Description: This example creates an array of Ramp variables
+  to control 3 different components (R,G,B) for a LED. 
     
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -22,14 +21,14 @@ ramp rampB [3]; // RGB ramp variables
 // Fade duration.
 int duration = 1500;
 
-void setup() {
-  Serial.begin(9600);
+// LED1 R, G, B components
+int led1RGB[3] = {150, 100, 255}; 
+// LED2 R, G, B components
+int led2RGB[3] = {100, 150, 200}; 
 
-  // System begins from A->B 
+void setup() {
   enableRampA(); 
   enableRampB();
-
-  lastTime = millis();
 }
 
 void loop() {

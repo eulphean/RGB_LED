@@ -2,9 +2,10 @@
 
   Author: Amay Kataria
   Date: 05/06/2018
-  Description: This example lets you blink an LED at a specific 
-  rate. The color of the LED is white. You can change the color
-  of the LED by changing the RGB value, which is set. 
+  Description: This example lets you blink an LED at a rate.
+  This rate is controlled by a variable called blinkTime. 
+  The color of the LED can be changed in led.setColor(). Value
+  lies between 0-255. 
     
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

@@ -2,11 +2,13 @@
 
   Author: Amay Kataria
   Date: 05/06/2018
-  Description: In this example, we blink Led1 and fade Led2. 
+  Description: This example blinks LED1 at the rate of
+  blinkTime variable and fades LED2. 
     
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <RGB_LED.h>
+#include <Ramp.h>
 
 // Define LED driver pins.
 RGB_LED led1(3, 5, 6);
@@ -16,23 +18,26 @@ enum FadeState {
   FadeIn, 
   FadeOut
 };
+FadeState fadeState = FadeIn;
 
 // Store last blink and fade times. 
 unsigned long lastBlinkTime; 
-unsigned long lastFadeTime; 
 
-// Blink & Fade LED states.  
+// Blink variables
 bool ledOn = true; 
-FadeState ledFadeState = FadeIn;
-
 int blinkTime = 200; // 1 second - 1000 ms
+int maxBrightnessLed1 = 255; 
+
+// Fade variables
+ramp fade;
 int fadeInTime = 500;
-int fadeOutTime = 500;
+int fadeOutTime = 1000;
+int maxBrightnessLed2 = 255; 
 
 void setup() {
   // Record starting time. 
   lastBlinkTime = millis(); 
-  lastFadeTime = millis();
+  setRamp();
 }
 
 void loop() {
@@ -46,7 +51,7 @@ void blinkLED() {
   // LED should be white and blinking every *blinkTime seconds*.  
   if (elapsedTime < blinkTime) {
     if (ledOn) {
-      led1.setColor(255, 255, 255);
+      led1.setColor(maxBrightnessLed1, maxBrightnessLed1, maxBrightnessLed1);
     } else {
       led1.setColor(0, 0, 0);
     }
@@ -56,31 +61,32 @@ void blinkLED() {
   }
 }
 
-void fadeLED() {
-  unsigned long elapsedTime = millis() - lastFadeTime; 
-
-  // FadeIn state.
-  if (ledFadeState == FadeIn) {
-    if (elapsedTime > fadeInTime) {
-      // Update state. 
-      ledFadeState = FadeOut;
-      lastFadeTime = millis(); // Reset time. 
-    } else {
-      // Map the brightness value based on elapsed time. 
-      int brightnessVal = map (elapsedTime, 0, fadeInTime, 0, 255); 
-      brightnessVal = constrain(brightnessVal, 0, 255);
-      led2.setColor(brightnessVal, brightnessVal, brightnessVal); 
-    }
-  } else if (ledFadeState == FadeOut) {
-    if (elapsedTime > fadeOutTime) {
-       // Update state to FadeIn. 
-       ledFadeState = FadeIn; 
-       lastFadeTime = millis(); // Reset time
-    } else {
-        int brightnessVal = map (elapsedTime, 0, fadeOutTime, 255, 0); 
-        brightnessVal = constrain(brightnessVal, 0, 255);
-        led2.setColor(brightnessVal, brightnessVal, brightnessVal);
-    }
+void setRamp() {
+  if (fadeState == FadeIn) {
+    fade.go(/*Digital value to interpolate between (0-255)*/ maxBrightnessLed2, /*Fade duration*/ fadeInTime, 
+    /*Interpolation mode*/QUADRATIC_IN, /*Loop mode*/ ONCEFORWARD);
   }
+  
+  if (fadeState == FadeOut) {
+    fade.go(/*Digital value to interpolate between (0-255)*/ 0, /*Fade duration*/ fadeOutTime, 
+    /*Interpolation mode*/QUADRATIC_IN, /*Loop mode*/ ONCEFORWARD);
+  } 
+}
+
+void fadeLED() {
+  /* Have reached maximum brightness and current state is FadeIn? */
+  if (fade.value() == maxBrightnessLed2 && fadeState == FadeIn) {
+    fadeState = FadeOut; 
+    setRamp();
+  }
+
+  /* Have reached minimum brightness and current state is FadeOut? 
+     Update LED state. */
+  if (fade.value() == 0 && fadeState == FadeOut) {
+    fadeState = FadeIn; 
+    setRamp();
+  }
+
+  led2.setColor(fade.update(), fade.update(), fade.update());
 }
 

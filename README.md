@@ -6,6 +6,7 @@ This library doesn't have any direct dependencies but the examples use the [RAMP
 
 ### HOW TO GET READY
 RGB_LED is an Arduino library. In order to use it in your projects, here are the steps:
+
 1. Click on *Clone or download* button on the right and Download Zip. 
 2. Unzip the zip file into a folder. 
 3. Copy the folder into ~/Documents/Arduino/libraries. 
@@ -13,3 +14,6 @@ RGB_LED is an Arduino library. In order to use it in your projects, here are the
 5. Open the Arduino IDE.
 6. Go to File->Examples->RGB_LED and open One_White_Blink example. 
 7. Make sure the system is wired and click on Play button to run the example. 
+
+Follow steps 1-5 for installing the RAMP library as well.
+

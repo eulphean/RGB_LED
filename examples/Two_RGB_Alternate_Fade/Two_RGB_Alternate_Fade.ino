@@ -38,14 +38,14 @@ void loop() {
 }
 
 void enableRampA() {
-  rampA[0].go(200, duration, QUADRATIC_IN, FORTHANDBACK); // Red
-  rampA[1].go(200, duration, QUADRATIC_IN, FORTHANDBACK); // Green
-  rampA[2].go(0, duration, QUADRATIC_IN, FORTHANDBACK); // Blue
+  rampA[0].go(led1RGB[0], duration, QUADRATIC_IN, FORTHANDBACK); // Red
+  rampA[1].go(led1RGB[1], duration, QUADRATIC_IN, FORTHANDBACK); // Green
+  rampA[2].go(led1RGB[2], duration, QUADRATIC_IN, FORTHANDBACK); // Blue
 }
 
 void enableRampB() {
-  rampB[0].go(200, duration, CIRCULAR_IN, BACKANDFORTH); // Red
-  rampB[1].go(0, duration, CIRCULAR_IN, BACKANDFORTH); // Green
-  rampB[2].go(100, duration, CIRCULAR_IN, BACKANDFORTH); // Blue
+  rampB[0].go(led2RGB[0], duration, CIRCULAR_IN, BACKANDFORTH); // Red
+  rampB[1].go(led2RGB[1], duration, CIRCULAR_IN, BACKANDFORTH); // Green
+  rampB[2].go(led2RGB[2], duration, CIRCULAR_IN, BACKANDFORTH); // Blue
 }
 
